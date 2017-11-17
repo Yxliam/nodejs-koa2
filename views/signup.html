@@ -1,0 +1,109 @@
+<% include header.html %>
+<link rel="stylesheet" href="/css/register.css">
+<div class="register">
+        <blockquote class="layui-elem-quote">注册</blockquote>
+        <form class="layui-form" method="post" action="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">用户名</label>
+              <div class="layui-input-inline">
+                <input type="text" name="name" lay-verify="name|required"   placeholder="请输入用户名" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">密码</label>
+              <div class="layui-input-inline">
+                <input type="password" name="password"  lay-verify="password|required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux"></div>
+            </div>
+            <div class="layui-form-item">
+                    <label class="layui-form-label">重复密码</label>
+                    <div class="layui-input-inline">
+                      <input type="password" name="repeatpass"  lay-verify="repeatpass|required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux"></div>
+                  </div>
+                  <div class="layui-form-item">
+                        <label class="layui-form-label">验证码</label>
+                        <div class="layui-input-inline">
+                                <input type="text" name="cap"  lay-verify="cap|required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                        </div>
+                      </div>
+                  <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                                <img src="/captcha?rand=<%= Math.random();%>" id="J-cap" alt="">
+                        </div>
+                      </div>
+        
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="register">注册</button>
+              </div>
+            </div>
+          </form>
+</div>
+
+<script>
+    //一般直接写在一个js文件中
+    layui.use(['layer', 'form'], function(){
+      var layer = layui.layer,
+            $   = layui.jquery
+      ,form = layui.form;
+
+      //验证码变化
+      $('#J-cap').on('click',function(){
+          var _this = $(this);
+          _this.attr('src','/captcha?rand='+Math.random());
+      })
+
+       //自定义验证规则
+       form.verify({
+            name: function(value){
+                // console.log( value == '' );
+                if(!value){
+                    return '请输入用户名';
+                }
+            }, password: function(value){
+                if(!value){
+                    return '请输入密码';
+                }
+            },repeatpass:function(value){
+                if(!value){
+                    return '请输入重复密码';
+                }
+            }
+        });
+
+        form.on('submit(register)',function(data){
+            //data.field
+
+
+
+            $.ajax({
+                url:'/register',
+                type:'post',
+                data:data.field
+            }).then(function(data){
+               if(data.data == 3){
+               
+                layer.alert(data.msg, {
+                        icon: 1,
+                        skin: 'layer-ext-moon' ,
+                    }, function(){
+                            window.location.href = '/signin'
+                        })
+
+
+               }else{
+                layer.msg( data.msg )
+               }
+            })
+            return false;
+        })
+      
+    //   layer.msg('Hello World');
+    });
+    </script> 
+
+<% include footer.html %>

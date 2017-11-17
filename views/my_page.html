@@ -1,0 +1,82 @@
+<% include header.html %>
+<style>
+    .main{
+        width:1200px;
+        margin:auto;
+        margin-top: 20px;
+    }
+    .m-r{
+        margin-left:20px;
+    }
+    .m-r:first-child{
+        margin-left: 0;
+    }
+    .content{
+        display: -webkit-box; 
+    text-overflow: ellipsis;
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    }
+</style>
+   <div class="main">
+    <ul class="layui-timeline" id="view">
+       
+        
+      </ul>
+   </div>
+   <script id="demo" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+        <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title"><a href='/list/{{ item.id}}'>{{=item.title }}</a></h3>
+              <p class="content">
+                {{=item.content}}
+              </p>
+              <div style="margin-top:10px;"><span  class="layui-icon m-r">&#xe612;</span>:{{item.name}}<span class="layui-icon m-r">&#xe63a;</span>:{{item.comments}} <span class="layui-icon m-r">&#xe615;</span>:{{item.pv}} <span class="layui-icon m-r">&#xe60e;</span>:{{ item.moment}}</div>
+            </div>
+          </li>
+     {{#  }); }}
+     {{#  if(d.length === 0){ }}
+     无数据
+   {{#  } }} 
+  </script>
+   <script>
+    //一般直接写在一个js文件中
+    layui.use(['layer', 'laytpl'], function(){
+      var layer = layui.layer,
+            $   = layui.jquery,
+            laytpl = layui.laytpl;
+            $.ajax({
+                url:'/my_list?name=<%=session.user%>',
+                type:'get',
+                // data:{name:'admin1'}
+            }).then(function(res){
+                if(res.data == 2){      
+                    
+                   
+
+                    
+                    var getTpl = demo.innerHTML,
+                    view = document.getElementById('view');
+                    laytpl(getTpl).render(res.list, function(html){
+                        view.innerHTML = html;
+                    });
+                }else{
+                    layer.msg( res.msg )
+                }
+            })
+
+         
+             //点击
+   
+
+
+    });
+
+   
+    </script> 
+<% include footer.html %>

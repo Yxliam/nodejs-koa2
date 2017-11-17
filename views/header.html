@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><% if(title) { %> <%=title%> <% } else { %> Blog <% } %></title>
+</head>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/commont.css">
+    
+    <script src="/layui/layui.js"></script>
+<body>
+        <header>
+            <ul class="layui-nav" lay-filter="">
+                <li class="layui-nav-item <% if(active == 'index'){%> layui-this<%}%>"><a href="/">首页</a></li>
+                <li id="J-create" class="layui-nav-item <% if(active == 'create'){%> layui-this<%}%>"><a href="javascript:void(0)">添加内容</a></li>
+                <% if(session.user){%>
+                    <li id="J-create" class="layui-nav-item <% if(active == 'my'){%> layui-this<%}%>"><a href="/my_page">我的发表</a></li>
+                    <li class="layui-nav-item <% if(active == 'logout'){%> layui-this<%}%>"><a href="/logout"><%= session.user %>,登出</a></li>
+                <% }%>
+                <% if(!session.user){%>
+                <li class="layui-nav-item <% if(active == 'singin'){%> layui-this<%}%> "><a href="/signin">登录</a></li>
+                <% } %>
+                <li class="layui-nav-item <% if(active == 'singup'){%> layui-this<%}%>"><a href="/singup">注册</a></li>
+            </ul>
+        </header>

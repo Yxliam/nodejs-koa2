@@ -1,0 +1,173 @@
+<% include header.html %>
+<style>
+     .main{
+        width:1180px;
+        margin:auto;
+        min-height: 800px;
+        border-left:1px solid #dedede;
+        border-right:1px solid #dedede;
+        padding:0 10px;
+    }
+    .title{
+        text-align: center;
+        padding:20px 0;
+        border-bottom:1px solid #dedede;
+    }
+    .title h1{
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .cont{
+        margin-top: 10px;
+    }
+    .comment{
+        border-top:1px solid #dedede;
+        margin:20px 0;
+    }
+    .comment-list li{
+        margin-bottom: 10px;
+        padding:10px 0;
+        border-bottom: 1px solid #dedede;
+    }
+</style>
+<div class="main">
+        <!-- <blockquote class="layui-elem-quote layui-quote-nm">内容区</blockquote> -->
+    <div class="title">
+       <h1><%= posts.title %></h1>
+       <p style="margin-top: 10px;"> <span class='layui-icon'>&#xe612;</span>:<%= posts.name %> <span class="layui-icon m-r">&#xe60e;</span>:<%= posts.moment %></p>
+    </div>
+    <div class="cont">
+        <div>
+            <%= posts.content%>
+        </div>
+    </div>
+    <div class="comment">
+       <p style="font-size:16px;padding:10px 0;">评论区</p>
+       <form class="layui-form" action="">
+            <div class="layui-form-item layui-form-text">
+                    <input type="hidden" id="J-pid" name="pid" value="<%= posts.id %>">
+                      <textarea name="comment" placeholder="请输入内容"  lay-verify="comment|required" class="layui-textarea"></textarea>
+            </div>
+            <div class="layui-form-item">
+                    <div class="layui-input-block" style="float:right">
+                      <button class="layui-btn" lay-submit lay-filter="comm">评论</button>
+                    </div>
+                  </div>
+
+       </form>
+       <ul class="comment-list" id="view">
+         
+       </ul>
+
+       <script id="demo" type="text/html">
+        {{#  layui.each(d, function(index, item){ }}
+        <li class="clearfix">
+                <div class="fl">
+                    <div><span class="layui-icon m-r">&#xe60e;</span>:{{=item.moment}}</div>
+                    <div style="margin-top:10px;text-indent:10px;">
+                            {{=item.content }}
+                    </div>
+                </div>
+                <div class="fr">
+                     <span class='layui-icon'>&#xe612;</span>:{{=item.name }}
+                </div>
+            </li>
+         {{#  }); }}
+         {{#  if(d.length === 0){ }}
+          暂无评论
+       {{#  } }} 
+      </script>
+
+
+    </div>
+</div>
+<script>
+      //Demo
+      layui.use(['layer', 'laytpl','form'], function(){
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery,
+            laytpl = layui.laytpl;
+         //自定义验证规则
+       form.verify({
+        comment: function(value){
+                if(!value){
+                    return '请输入评论';
+                }
+            }
+        });
+        //监听提交
+        form.on('submit(comm)', function(data){
+            $.ajax({
+                url:'/check_login',
+                type:'post'
+            }).then(function(res){
+                if(res.data == 2){
+                    $.ajax({
+                        url:'/add_comment',
+                        type:'post',
+                        data:data.field
+                    })
+                    .then(function(res){
+                        if(res.data == 2){
+                                location.reload();
+                        }else{
+                            layer.msg( res.msg )
+                        }
+                    })
+                }else{
+                    layer.msg('请先登录')
+                }
+            })
+            
+          return false;
+        });
+
+        //获取总评论数
+        var pid = $('#J-pid').val();
+        $.ajax({
+            url:'/comment_list',
+            data:{pid:pid},
+            type:'post',
+        }).then(function(res){
+            if(res.data == 2){
+                if(res.list){
+
+                    var compare = function (obj1, obj2) {
+                        var val1 = obj1.moment;
+                        var val2 = obj2.moment;
+                        if (val1 < val2) {
+                            return 1;
+                        } else if (val1 > val2) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }            
+                    } 
+                    var new_list = res.list.sort(compare)
+                    var getTpl = demo.innerHTML,
+                    view = document.getElementById('view');
+
+                    laytpl(getTpl).render(new_list, function(html){
+                        view.innerHTML = html;
+                    });
+
+                }else{
+                    layer.msg( res.msg )
+                }
+                
+            }else{
+                layer.msg( res.msg )   
+            }
+        })
+
+
+
+
+      });
+      </script>
+
+
+
+
+<% include footer.html %>

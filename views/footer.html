@@ -1,0 +1,20 @@
+<script>
+     //一般直接写在一个js文件中
+     var name = '<%=session.user%>'
+     layui.use(['layer', 'form'], function(){
+      var layer = layui.layer,
+            $   = layui.jquery;
+   
+        $('#J-create').on('click',function(){
+            if(name){
+                window.location.href = '/create'
+            }else{
+                layer.msg('亲，登录了才能发表文章哦')
+            }
+        })
+    })
+   
+
+</script>
+</body>
+</html>
